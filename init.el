@@ -123,14 +123,14 @@
   :after evil
   :config
   (global-evil-surround-mode 1))
-(use-package evil-org
-  :demand t
-  :after evil org
-  :hook (org-mode . evil-org-mode)
-  :config
-  (add-hook 'evil-org-mode-hook 'evil-org-set-key-theme)
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
+;(use-package evil-org
+;  :demand t
+;  :after evil org
+;  :hook (org-mode . evil-org-mode)
+;  :config
+;  (add-hook 'evil-org-mode-hook 'evil-org-set-key-theme)
+;  (require 'evil-org-agenda)
+;  (evil-org-agenda-set-keys))
 
 (use-package general
   :demand t
@@ -161,13 +161,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VIM BINDS
 (general-define-key
  :states 'motion
- ;; swap ; and :
  ;"a" 'evil-forward-char
  "e" 'evil-next-line
  "o" 'evil-previous-line
- ;"h" 'evil-backward-char
- 
+                                        ;"h" 'evil-backward-char
  )
+
 
 (general-create-definer localleader-def
   :states '(normal motion emacs)
@@ -224,7 +223,8 @@
         (t . (monochrome)))))
 
 (defun me/init-theme ()
-  (load-theme 'modus-operandi t))
+  "."
+  (load-theme 'doom-gruvbox t))
 
 (add-hook 'emacs-startup-hook #'me/init-theme)
 
@@ -246,10 +246,11 @@
 
 (use-package all-the-icons
   :demand t)
-(use-package all-the-icons-dired
-  :defer 1
-  :after all-the-icons
-  :hook (dired-mode . all-the-icons-dired-mode))
+
+; (use-package all-the-icons-dired
+;   :defer 1
+;   :after all-the-icons
+;   :hook (dired-mode . all-the-icons-dired-mode))
 (use-package treemacs-all-the-icons
   :defer 1
   :after all-the-icons treemacs
@@ -294,8 +295,8 @@
 (use-package doom-modeline
   :demand t
   :custom
-  (inhibit-compacting-font-caches t)
-  (doom-modeline-height 28)
+  ;; (inhibit-compacting-font-caches t)
+  ;; (doom-modeline-height 28)
   ;; 1 minor mode will be shown thanks to minions
   (doom-modeline-minor-modes t)
   (doom-modeline-hud t)
@@ -374,12 +375,12 @@
   :defer 1
   :hook
   ;; Ensure solaire-mode is running in all solaire-mode buffers
-  (change-major-mode . turn-on-solaire-mode)
+  ((change-major-mode . turn-on-solaire-mode))
   ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
   ;; itself off every time Emacs reverts the file
-  (after-revert . turn-on-solaire-mode)
+  ((after-revert . turn-on-solaire-mode))
   ;; To enable solaire-mode unconditionally for certain modes:
-  (ediff-prepare-buffer . solaire-mode)
+  ((ediff-prepare-buffer . solaire-mode))
   :custom
   (solaire-mode-auto-swap-bg t)
   :config
@@ -439,7 +440,7 @@
   :if *is-unix*
   :after magit
   :commands magit-delta-mode
-  :hook (magit-mode . magit-delta-mode))
+  :hook ((magit-mode . magit-delta-mode)))
 
 (defun me/expand-git-project-dirs (root)
   "Return a list of all project directories 2 levels deep in ROOT.
@@ -475,7 +476,7 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
 (use-package flycheck-posframe
   :defer 1
   :after flycheck
-  :hook (flycheck-mode . flycheck-posframe-mode)
+  :hook ((flycheck-mode . flycheck-posframe-mode))
   :config
   (flycheck-posframe-configure-pretty-defaults)
   (add-hook 'flycheck-posframe-inhibit-functions #'company--active-p)
@@ -485,7 +486,7 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
 (use-package diff-hl
   :defer 1
   :hook
-  (dired-mode . diff-hl-dired-mode-unless-remote)
+  ((dired-mode . diff-hl-dired-mode-unless-remote))
   :config
   (global-diff-hl-mode 1))
 
@@ -510,11 +511,12 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
   :defer 1
   :commands lsp lsp-deferred
   :hook
-  (prog-mode . lsp-deferred)
-  (lsp-mode . lsp-enable-which-key-integration)
+  ((prog-mode . lsp-deferred))
+  ((lsp-mode . lsp-enable-which-key-integration))
   :init
   (setq lsp-completion-provider :capf
         lsp-keymap-prefix nil)
+
   :general
   (local-leader-def
     :keymaps 'lsp-mode-map
