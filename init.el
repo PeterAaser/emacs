@@ -1,3 +1,8 @@
+;;; package --- Anus.
+;;; Commentary:
+
+;;; -*- lexical-binding: t; -*-
+
 ;; environment
 (defconst *is-windows* (eq system-type 'windows-nt))
 (defconst *is-unix* (not *is-windows*))
@@ -108,29 +113,33 @@
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1))
+
 (use-package evil-collection
   :demand t
   :after evil
   :config
   (evil-collection-init))
+
 (use-package evil-commentary
   :demand t
   :after evil
   :config
   (evil-commentary-mode 1))
+
 (use-package evil-surround
   :demand t
   :after evil
   :config
   (global-evil-surround-mode 1))
-;(use-package evil-org
-;  :demand t
-;  :after evil org
-;  :hook (org-mode . evil-org-mode)
-;  :config
-;  (add-hook 'evil-org-mode-hook 'evil-org-set-key-theme)
-;  (require 'evil-org-agenda)
-;  (evil-org-agenda-set-keys))
+
+(use-package evil-org
+  :demand t
+  :after evil org
+  :hook ((org-mode . evil-org-mode))
+  :config
+  (add-hook 'evil-org-mode-hook 'evil-org-set-key-theme)
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (use-package general
   :demand t
@@ -159,15 +168,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VIM BINDS
-(general-define-key
- :states 'motion
- ;"a" 'evil-forward-char
- "e" 'evil-next-line
- "o" 'evil-previous-line
-                                        ;"h" 'evil-backward-char
- )
-
-
+ 
 (general-create-definer localleader-def
   :states '(normal motion emacs)
   :keymaps 'override
@@ -179,6 +180,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rice trash
+(set-face-attribute 'default nil :height 180)
+
+(global-linum-mode 1)
 
 (use-package leuven-theme
   :defer t)
