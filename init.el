@@ -4,20 +4,6 @@
 ;;; -*- lexical-binding: t; -*-
 
 ;; environment
-(defconst *is-windows* (eq system-type 'windows-nt))
-(defconst *is-unix* (not *is-windows*))
-
-;; fonts
-(defconst *mono-font-family*
-  (if *is-windows* "JetBrainsMono NF" "GoMono Nerd Font"))
-(defconst *mono-font-height*
-  (if *is-windows* 90 90))
-(defconst *serif-font-family*
-  (if *is-windows* "Georgia" "IBM Plex Serif"))
-(defconst *serif-font-height*
-  (if *is-windows* 110 110))
-(defconst *project-dir* (expand-file-name "~/git"))
-
 (use-package better-defaults
   :straight (better-defaults :type git :host nil :repo "https://git.sr.ht/~technomancy/better-defaults")
   :demand t)
@@ -61,11 +47,8 @@
 (set-selection-coding-system 'utf-8)
 (set-file-name-coding-system 'utf-8)
 (set-clipboard-coding-system 'utf-8)
-(if *is-windows*
-  (set-w32-system-coding-system 'utf-8))
 (set-buffer-file-coding-system 'utf-8)
 
-;; no ~#hurr.swp shit por favor
 (use-package no-littering
   :demand t
   :config
@@ -75,24 +58,6 @@
   (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
   (when (file-exists-p custom-file)
     (load custom-file)))
-
-
-;; which-key pops up a nice window whenever we hesitate about a keyboard shortcut, 
-;; and shows all the possible keys we can press. Popularized by Spacemacs and Doom-Emacs, 
-;; we can now configure absurd key combinations, forget about them, and then be 
-;; delighted to discover them again!
-(use-package which-key
-  :demand t
-  :after evil
-  :custom
-  (which-key-allow-evil-operators t)
-  (which-key-show-remaining-keys t)
-  (which-key-sort-order 'which-key-prefix-then-key-order)
-  :config
-  (which-key-mode 1)
-  (which-key-setup-minibuffer)
-  (set-face-attribute
-    'which-key-local-map-description-face nil :weight 'bold))
 
 ;; Vim!
 (use-package undo-tree
@@ -184,13 +149,6 @@
 
 (global-linum-mode 1)
 
-(use-package leuven-theme
-  :defer t)
-
-(use-package vivid-theme
-  :straight (:host github :repo "websymphony/vivid-theme")
-  :defer t)
-
 (use-package doom-themes
   :defer t
   :config
@@ -206,47 +164,11 @@
    '(outline-2 :height 1.1)
    '(outline-3 :height 1.0)))
 
-(use-package modus-themes
-  :defer t
-  :custom
-  (modus-themes-italic-constructs t)
-  (modus-themes-intense-markup t)
-  (modus-themes-mode-line '(borderless moody))
-  (modus-themes-tabs-accented t)
-  (modus-themes-completions
-   '((matches . (extrabold background intense))
-     (selection . (semibold accented intense))
-     (popup . (accented))
-     (t . (extrabold intense))))
-  (modus-themes-org-blocks 'tinted-background)
-  (modus-themes-mixed-fonts t)
-  (modus-themes-headings
-      '((1 . (rainbow))
-        (2 . (rainbow))
-        (3 . (rainbow))
-        (t . (monochrome)))))
-
 (defun me/init-theme ()
   "."
   (load-theme 'doom-gruvbox t))
 
 (add-hook 'emacs-startup-hook #'me/init-theme)
-
-;;; fonts something-something
-(use-package persistent-soft
-  :demand t)
-
-; (use-package unicode-fonts
-;   :demand t
-;   :after persistent-soft
-;   :config
-;   (unicode-fonts-setup)
-;   (custom-set-faces
-;    `(default ((t (:family ,*mono-font-family*
-;                   :height ,*mono-font-height*))))
-;    `(variable-pitch ((t (:family ,*serif-font-family*
-;                          :height ,*serif-font-height*))))))
-
 
 (use-package all-the-icons
   :demand t)
@@ -285,17 +207,6 @@
   :config
   (dashboard-setup-startup-hook))
 
-(use-package anzu
-  :defer 1
-  :after isearch
-  :config
-  (global-anzu-mode 1))
-
-(use-package minions
-  :defer 1
-  :config
-  (minions-mode 1))
-
 (use-package doom-modeline
   :demand t
   :custom
@@ -319,29 +230,6 @@
   (fast-scroll-config)
   (fast-scroll-mode 1))
 
-(use-package ligature
-  :straight (:host github :repo "mickeynp/ligature.el")
-  :defer 1
-  :config
-  (ligature-set-ligatures 't '("www"))
-  (ligature-set-ligatures
-   'prog-mode
-   '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
-     "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
-     "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
-     "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
-     "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
-     "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
-     "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
-     "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
-     ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
-     "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
-     "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
-     "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
-     "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
-     "&="))
-  (global-ligature-mode t))
-
 (defun me/reload-init ()
   "Reload init.el."
   (interactive)
@@ -358,101 +246,6 @@
     "qn" 'restart-emacs-start-new-emacs
     "qr" 'me/reload-init))
 
-(use-package helpful
-  :defer 1
-  :general
-  (leader-def
-    "h" '(:ignore t :wk "help")
-    "hh" 'helpful-symbol
-    "hf" 'helpful-function
-    "hv" 'helpful-variable
-    "hk" 'helpful-key
-    "ho" 'helpful-at-point)
-  :config
-  (add-to-list 'display-buffer-alist
-               '("*[Hh]elp"
-                 (display-buffer-reuse-mode-window
-                  display-buffer-pop-up-window))))
-
-;; A more complex, more lazy-loaded config
-(use-package solaire-mode
-  :defer 1
-  :hook
-  ;; Ensure solaire-mode is running in all solaire-mode buffers
-  ((change-major-mode . turn-on-solaire-mode))
-  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
-  ;; itself off every time Emacs reverts the file
-  ((after-revert . turn-on-solaire-mode))
-  ;; To enable solaire-mode unconditionally for certain modes:
-  ((ediff-prepare-buffer . solaire-mode))
-  :custom
-  (solaire-mode-auto-swap-bg t)
-  :config
-  (solaire-global-mode +1))
-
-(use-package company
-  :defer 1
-  :config
-  (global-company-mode 1))
-(use-package company-prescient
-  :defer 1
-  :after company prescient
-  :config
-  (company-prescient-mode 1))
-(use-package company-posframe
-  :defer 1
-  :after company
-  :custom
-  (company-posframe-quickhelp-delay nil)
-  :config
-  (company-posframe-mode 1))
-
-(use-package magit
-  :commands magit
-  :general
-  (leader-def
-    "g"  '(:ignore t :wk "git")
-    "gs" '(magit :wk "git status")
-    "gg" '(magit :wk "git status"))
-  :custom
-  (magit-repository-directories `((,*project-dir* . 3)))
-  :config
-  ;; speed up magit for large repos
-  (dir-locals-set-class-variables 'huge-git-repository
-   '((magit-status-mode
-      . ((eval . (magit-disable-section-inserter 'magit-insert-tags-header))))))
-
-  ;; clasify by repo-name as detected by magit.
-  ;; .dir-locals.el isn't portable across machines.
-  (let ((large-dirs '("nixpkgs")))
-    (dolist
-        (dir large-dirs)
-      (dir-locals-set-directory-class
-       (cdr (assoc dir (magit-repos-alist)))
-       'huge-git-repository))))
-
-(use-package magit-todos
-  :after magit
-  :commands magit-todos-list magit-todos-mode
-  :general
-  (leader-def
-    "gt" 'magit-todos-list)
-  :init
-  (if *is-windows* (setq magit-todos-nice nil)))
-
-(use-package magit-delta
-  :if *is-unix*
-  :after magit
-  :commands magit-delta-mode
-  :hook ((magit-mode . magit-delta-mode)))
-
-(defun me/expand-git-project-dirs (root)
-  "Return a list of all project directories 2 levels deep in ROOT.
-
-Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/project=, return a list of 'user' directories that are part of the ROOT."
-  (mapcan #'(lambda (d) (cddr (directory-files d t)))
-          (cddr (directory-files root t))))
-
 (use-package projectile
   :demand t
   :general
@@ -467,32 +260,10 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
   (projectile-completion-system 'default)
   (projectile-enable-caching t)
   (projectile-sort-order 'recently-active)
-  (projectile-indexing-method (if *is-unix* 'hybrid 'native))
-  (projectile-project-search-path `((,*project-dir* . 3)))
+  (projectile-indexing-method 'hybrid)
   :config
   (projectile-save-known-projects)
   (projectile-mode +1))
-
-(use-package flycheck
-  :defer 1
-  :init
-  (global-flycheck-mode t))
-(use-package flycheck-posframe
-  :defer 1
-  :after flycheck
-  :hook ((flycheck-mode . flycheck-posframe-mode))
-  :config
-  (flycheck-posframe-configure-pretty-defaults)
-  (add-hook 'flycheck-posframe-inhibit-functions #'company--active-p)
-  (add-hook 'flycheck-posframe-inhibit-functions #'evil-insert-state-p)
-  (add-hook 'flycheck-posframe-inhibit-functions #'evil-replace-state-p))
-
-(use-package diff-hl
-  :defer 1
-  :hook
-  ((dired-mode . diff-hl-dired-mode-unless-remote))
-  :config
-  (global-diff-hl-mode 1))
 
 (use-package treemacs
   :defer 2
@@ -510,26 +281,6 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
 (use-package treemacs-magit
   :defer 1
   :after treemacs-magit)
-
-(use-package lsp-mode
-  :defer 1
-  :commands lsp lsp-deferred
-  :hook
-  ((prog-mode . lsp-deferred))
-  ((lsp-mode . lsp-enable-which-key-integration))
-  :init
-  (setq lsp-completion-provider :capf
-        lsp-keymap-prefix nil)
-
-  :general
-  (local-leader-def
-    :keymaps 'lsp-mode-map
-    "l" '(lsp-command-map :wk "LSP")))
-
-(use-package company-lsp
-  :after company lsp-mode
-  :config
-  (add-to-list 'company-backends 'company-lsp))
 
 (use-package emacs
   :init
@@ -556,102 +307,6 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
-(use-package savehist
-  :demand t
-  :config
-  (savehist-mode))
-
-(use-package vertico
-  :demand t
-  :custom
-  (vertico-resize t)
-  (vertico-cycle t)
-  :config
-  (vertico-mode))
-
-(use-package icomplete
-  :custom
-  (read-file-name-completion-ignore-case t)
-  (read-buffer-completion-ignore-case t)
-  (completion-ignore-case t)
-
-  (completion-category-defaults nil)
-  (completion-category-overrides
-   '((file (styles basic partial-completion))))
-
-  (completion-group t)
-  (completions-group-format
-        (concat
-         (propertize "    " 'face 'completions-group-separator)
-         (propertize " %s " 'face 'completions-group-title)
-         (propertize " " 'face 'completions-group-separator
-                     'display '(space :align-to right)))))
-(use-package orderless
-  :demand t
-  :custom
-  (completion-styles '(orderless))
-  :config
-  (defun prefix-if-tilde (pattern _index _total)
-    (when (string-suffix-p "~" pattern)
-      `(orderless-prefixes . ,(substring pattern 0 -1))))
-
-  (defun regexp-if-slash (pattern _index _total)
-    (when (string-prefix-p "/" pattern)
-      `(orderless-regexp . ,(substring pattern 1))))
-
-  (defun literal-if-equal (pattern _index _total)
-    (when (string-suffix-p "=" pattern)
-      `(orderless-literal . ,(substring pattern 0 -1))))
-
-  (defun without-if-bang (pattern _index _total)
-    (cond
-     ((equal "!" pattern)
-      '(orderless-literal . ""))
-     ((string-prefix-p "!" pattern)
-      `(orderless-without-literal . ,(substring pattern 1)))))
-
-  (setq orderless-matching-styles '(orderless-flex))
-  (setq orderless-style-dispatchers
-        '(prefix-if-tilde
-          regexp-if-slash
-          literal-if-equal
-          without-if-bang)))
-
-(use-package consult
-  :defer 1
-  :general
-  (leader-def
-    "ff" 'find-file
-    "fr" 'consult-recent-file
-    "bb" 'consult-buffer
-    "tc" 'consult-theme
-    "/"  'consult-ripgrep
-    "g/" 'consult-git-grep)
-  :custom
-  (consult-project-root-function #'projectile-project-root)
-  (consult-narrow-key "<"))
-
-(use-package consult-projectile
-  :after consult projectile
-  :demand t
-  :straight (consult-projectile :type git :host gitlab :repo "OlMon/consult-projectile" :branch "master")
-  :general
-  (leader-def
-    "pp" 'consult-projectile))
-
-(use-package consult-flycheck
-  :after (consult flycheck)
-  :demand t
-  :general
-  (leader-def
-    "ee" 'consult-flycheck))
-
-(use-package marginalia
-  :defer 1
-  :config
-  (marginalia-mode 1))
-
-
 ;; treat camel-cased words as individual words.
 (add-hook 'prog-mode-hook 'subword-mode)
 ;; don't assume sentences end with two spaces after a period.
@@ -671,8 +326,6 @@ Given my git projects directory ROOT, with a layout like =git/{hub,lab}/<user>/p
 (setq key-chord-one-key-delay 0.2)
 
 (key-chord-define evil-insert-state-map "vk" 'evil-normal-state)
-
-(use-package git-modes)
 
 (provide 'init)
 
