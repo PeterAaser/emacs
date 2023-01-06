@@ -3,6 +3,11 @@
 
 ;;; -*- lexical-binding: t; -*-
 
+;; Local Variables:
+;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; byte-compile-warnings: (not free-vars)
+;; End:
+
 ;; environment
 (use-package better-defaults
   :straight (better-defaults :type git :host nil :repo "https://git.sr.ht/~technomancy/better-defaults")
@@ -106,42 +111,67 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
+(use-package helm
+  :demand t
+  :straight t)
+(global-set-key (kbd "C-S-p") 'helm-M-x)
+
+(use-package helm-projectile
+  :demand t
+  :straight t)
+
+;; which-key pops up a nice window whenever we hesitate about a keyboard shortcut, 
+;; and shows all the possible keys we can press. Popularized by Spacemacs and Doom-Emacs, 
+;; we can now configure absurd key combinations, forget about them, and then be 
+;; delighted to discover them again!
+(use-package which-key
+  :demand t
+  :after evil
+  :custom
+  (which-key-allow-evil-operators t)
+  (which-key-show-remaining-keys t)
+  (which-key-sort-order 'which-key-prefix-then-key-order)
+  :config
+  (which-key-mode 1)
+  (which-key-setup-minibuffer)
+  (set-face-attribute
+    'which-key-local-map-description-face nil :weight 'bold))
+
 (use-package general
   :demand t
   :config
-  (general-evil-setup t)
+  (general-evil-setup t))
   (general-create-definer leader-def
     :states '(normal motion emacs)
     :keymaps 'override
     :prefix "SPC"
     :non-normal-prefix "C-SPC")
-  (leader-def
-    "" '(:ignore t :wk "leader")
-    "f" '(:ignore t :wk "file")
-    "c" '(:ignore t :wk "checks")
-    "t" '(:ignore t :wk "toggle")
-    "b" '(:ignore t :wk "buffer")
-    "bd" 'kill-this-buffer
-    "bn" 'next-buffer
-    "bp" 'previous-buffer
-    "bx" 'kill-buffer-and-window
-    "s" '(:ignore t :wk "straight")
-    "sf" 'straight-x-fetch-all
-    "sp" 'straight-x-pull-all
-    "sr" 'straight-remove-unused-repos
-    "ss" 'straight-get-recipe)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VIM BINDS
- 
-(general-create-definer localleader-def
-  :states '(normal motion emacs)
-  :keymaps 'override
-  :prefix "SPC m"
-  :non-normal-prefix "C-SPC m")
-(localleader-def "" '(:ignore t :wk "mode")))
+(leader-def
+  "" '(:ignore t :wk "leader")
+  "f" '(:ignore t :wk "file")
+  "ff" 'helm-find-files
+  "c" '(:ignore t :wk "checks")
+  "t" '(:ignore t :wk "toggle")
+  "b" '(:ignore t :wk "buffer")
+  "bd" 'kill-this-buffer
+  "bn" 'next-buffer
+  "bp" 'previous-buffer
+  "bB" 'me/scratch-new
+  "s" '(:ignore t :wk "straight")
+  "sf" 'straight-x-fetch-all
+  "sp" 'straight-x-pull-all
+  "sr" 'straight-remove-unused-repos
+  "ss" 'straight-get-recipe)
 
-
+(general-define-key
+ :states '(normal visual)
+ "a" 'evil-backward-char
+ "h" 'evil-forward-char
+ "e" 'evil-next-line
+ "o" 'evil-previous-line
+ "C-h" 'next-window-any-frame
+ "C-a" 'previous-window-any-frame)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Rice trash
@@ -260,9 +290,8 @@
   (projectile-completion-system 'default)
   (projectile-enable-caching t)
   (projectile-sort-order 'recently-active)
-  (projectile-indexing-method 'hybrid)
+  (projectile-indexing-method 'native)
   :config
-  (projectile-save-known-projects)
   (projectile-mode +1))
 
 (use-package treemacs
@@ -326,6 +355,43 @@
 (setq key-chord-one-key-delay 0.2)
 
 (key-chord-define evil-insert-state-map "vk" 'evil-normal-state)
+
+(use-package helpful
+  :defer 1
+  :general
+  (leader-def
+    "h" '(:ignore t :wk "help")
+    "hh" 'helpful-symbol
+    "hf" 'helpful-function
+    "hv" 'helpful-variable
+    "hk" 'helpful-key
+    "ho" 'helpful-at-point)
+  :config
+  (add-to-list 'display-buffer-alist
+               '("*[Hh]elp"
+                 (display-buffer-reuse-mode-window
+                  display-buffer-pop-up-window))))
+
+(use-package info-colors
+  :defer 1
+  :config
+  (add-hook 'Info-selection-hook 'info-colors-fontify-node))
+
+;; Scratch buffer
+(defun me/scratch-new ()
+  "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
+  (interactive)
+  (let ((n 0)
+        bufname)
+    (while (progn
+             (setq bufname (concat "*scratch"
+                                   (if (= n 0) "" (int-to-string n))
+                                   "*"))
+             (setq n (1+ n))
+             (get-buffer bufname)))
+  (switch-to-buffer (get-buffer-create bufname))
+  (if (= n 1) initial-major-mode))) ; 1, because n was incremented
+
 
 (provide 'init)
 
